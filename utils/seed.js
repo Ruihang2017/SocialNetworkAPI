@@ -1,8 +1,13 @@
 const connection = require('../config/connection');
 const { User, Thought, Reaction } = require('../models');
+const { Types } = require('mongoose');
+
 const {
-	getRandomReaction,
+	getRandomReactions,
 	getRandomUsername,
+	thoughtData,
+	usernameData,
+	reactionData,
 	getRandomThoughts,
 } = require('./data');
 
@@ -25,16 +30,59 @@ connection.once('open', async () => {
 		await connection.dropCollection('thoughts');
 	}
 
+	// seed collections
+	seedThought();
+	seedUser();
+
+	console.log('Successful seeded');
+});
+
+const seedUser = async () => {
 	// create empty array for the users
 	const users = [];
-	for (let i = 0; i < 5; i++) {
-		const username = getRandomUsername();
-		const email = `${username}@sampleEmail.com`;
+	usernameData.forEach((data) => {
+		const username = data;
+		const email = `${data}@sampleEmail.com`;
 		users.push({
 			username,
 			email,
 		});
-	}
+	});
 
 	await User.collection.insertMany(users);
-});
+};
+
+const seedThought = async () => {
+	const thoughts = [];
+	let reactions;
+
+	thoughtData.forEach((data) => {
+		const reactionId = new Types.ObjectId();
+		const thoughtText = data;
+		const createdAt = new Date();
+		const userName = getRandomUsername();
+
+		reactions = [];
+		let reactionsData = getRandomReactions();
+		if (reactionsData) {
+			reactionsData.forEach((data) => {
+				const reactionBody = data;
+				const userName = getRandomUsername();
+				const createdAt = new Date();
+				reactions.push({
+					reactionId,
+					reactionBody,
+					userName,
+					createdAt,
+				});
+			});
+		}
+		thoughts.push({
+			thoughtText,
+			createdAt,
+			userName,
+			reactions,
+		});
+	});
+	await Thought.collection.insertMany(thoughts);
+};

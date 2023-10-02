@@ -1,4 +1,4 @@
-const username = [
+const usernameData = [
 	'CyberNinja',
 	'StarGazer',
 	'TechSavvy',
@@ -7,21 +7,9 @@ const username = [
 	'QuantumCoder',
 	'SkyDiver',
 	'MysticWanderer',
-	'PixelPioneer',
-	'NatureNomad',
-	'VelvetVoyager',
-	'MidnightRider',
-	'NeonGlow',
-	'SolarFlare',
-	'VelvetThunder',
-	'ShadowWalker',
-	'LunaEclipse',
-	'FireStorm',
-	'AquaDreamer',
-	'JungleJazz',
 ];
 
-const thought = [
+const thoughtData = [
 	'The only limit is the one you set for yourself.',
 	'Every accomplishment starts with the decision to try.',
 	'Success is not final, failure is not fatal: It is the courage to continue that counts.',
@@ -34,7 +22,7 @@ const thought = [
 	'The only way to do great work is to love what you do.',
 ];
 
-const reaction = [
+const reactionData = [
 	'I completely agree!',
 	'Interesting perspective.',
 	"Wow, that's insightful!",
@@ -52,20 +40,36 @@ const getRandomArrItem = (arr) => {
 	return arr[Math.floor(Math.random() * arr.length)];
 };
 
-const getRandomUsername = () => {
-	return getRandomArrItem(username);
-};
-
-const getRandomThoughts = (n) => {
-	let arr = [];
+const getRandomArrItems = (arr) => {
+	const n = Math.floor(Math.random() * arr.length);
+	const newArr = [];
 	for (let i = 0; i < n; i++) {
-		arr.push(getRandomArrItem(thought));
+		newArr.push(getRandomArrItem(arr));
 	}
-	return arr;
+	return newArr;
 };
 
-const getRandomReaction = () => {
-	return getRandomArrItem(reaction);
+const getRandomUsername = () => {
+	return getRandomArrItem(usernameData);
 };
 
-module.exports = { getRandomUsername, getRandomThoughts, getRandomReaction };
+const getRandomUsernames = () => {
+	return getRandomArrItems(usernameData);
+};
+
+const getRandomThoughts = () => {
+	return getRandomArrItems(thoughtData);
+};
+
+const getRandomReactions = () => {
+	return getRandomArrItems(reactionData);
+};
+
+module.exports = {
+	getRandomUsername,
+	getRandomThoughts,
+	thoughtData,
+	usernameData,
+	reactionData,
+	getRandomReactions,
+};
