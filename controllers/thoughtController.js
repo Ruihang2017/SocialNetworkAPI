@@ -1,4 +1,5 @@
 const { User, Thought } = require('../models');
+const { Types } = require('mongoose');
 
 module.exports = {
 	// getThought
@@ -34,7 +35,13 @@ module.exports = {
 		try {
 			console.log('createThought');
 			const thought = await Thought.create(req.body);
-			res.json(thought);
+			const user = await User.findOneAndUpdate(
+				{ _id: req.body.userName },
+				{ $addToSet: { thoughts: thought._id } },
+				{ new: true }
+			).select('-__v');
+
+			res.json({ thought: thought, user: user });
 		} catch (err) {
 			res.status(500).json(err);
 		}
@@ -67,6 +74,46 @@ module.exports = {
 			}
 
 			res.json({ message: 'User and associated apps deleted!' });
+		} catch (err) {
+			res.status(500).json(err);
+		}
+	},
+
+	// createFriend
+	async createReaction(req, res) {
+		try {
+			console.log('createReaction');
+			// const reaction = await Thought.create(req.body);
+			const reaction = {
+				reactionId: new Types.ObjectId(),
+				reactionBody: req.body.reaction.reactionBody,
+				username: req.body.reaction.username,
+				createdAt: new Date(),
+			};
+			const thought = await Thought.findOneAndUpdate(
+				{ _id: req.params.thoughtId },
+				{ $addToSet: { reactions: reaction } },
+				{ new: true }
+			).select('-__v');
+
+			res.json(thought);
+		} catch (err) {
+			res.status(500).json(err);
+		}
+	},
+
+	// deteleFriend
+	async deleteReaction(req, res) {
+		try {
+			console.log('deleteReaction');
+
+			const thought = await Thought.findOneAndUpdate(
+				{ _id: req.params.thoughtId },
+				{ $pull: { reactions: { reactionId: req.body.reactionId } } },
+				{ new: true }
+			).select('-__v');
+
+			res.json(thought);
 		} catch (err) {
 			res.status(500).json(err);
 		}
